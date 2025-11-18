@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NMIPC</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;700;900&display=swap"
+    rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=azeret-mono@1&display=swap" rel="stylesheet">
+  <style>
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #333;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #444;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: 'Instrument Serif', serif;
+    }
+
+    .font-serif {
+      font-family: 'Instrument Serif', serif;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+
+      100% {
+        transform: translateY(0px);
+      }
+    }
+
+    .animate-float-1 {
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .animate-float-2 {
+      animation: float 7s ease-in-out infinite reverse;
+    }
+
+    .animate-float-3 {
+      animation: float 5.5s ease-in-out infinite;
+    }
+
+    .animate-float-4 {
+      animation: float 7.5s ease-in-out infinite reverse;
+    }
+
+    @keyframes pulse-line {
+      to {
+        stroke-dashoffset: 1000;
+      }
+    }
+
+    .animate-pulse-line {
+      stroke-dasharray: 7 7;
+      animation: pulse-line 60s linear infinite;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .fade-in-section {
+      opacity: 0;
+    }
+
+    .fade-in-section.is-visible {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 5px rgba(251, 191, 36, 0.3)) drop-shadow(0 0 15px rgba(251, 191, 36, 0.2));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 10px rgba(251, 191, 36, 0.5)) drop-shadow(0 0 25px rgba(251, 191, 36, 0.4));
+      }
+    }
+
+    .animate-glow {
+      animation: glow 4s ease-in-out infinite;
+    }
+  </style>
+</head>
+
+<body class="bg-black text-gray-300 antialiased">
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
+</html>
