@@ -2,6 +2,8 @@ import requests
 import sys
 import os
 import time
+import shutil
+import re
 
 BASE_URL = "https://exunhack.onrender.com"
 TOKEN = None
@@ -11,45 +13,63 @@ SESSION_FILE = "worker_session.txt"  # owo dont blame me
 
 
 class Colors:
-    HEADER = '\033[95m'
-    BLUE = '\033[94m'
-    CYAN = '\033[96m'
-    GREEN = '\033[92m'
-    YELLOW = '\033[93m'
-    RED = '\033[91m'
-    ENDC = '\033[0m'
+    GREEN = '\033[38;2;34;197;94m'      # #22C55E
+    GRAY = '\033[38;2;75;85;99m'       # #4B5563
+    MUTED = '\033[38;2;156;163;175m'   # #9CA3AF
+    DIM = '\033[38;2;107;114;128m'     # #6B7280
+    SOFT = '\033[38;2;229;231;235m'    # #E5E7EB
+    RED = '\033[38;2;255;0;60m'        # #FF003C
+    WHITE = '\033[38;2;255;255;255m'   # #FFFFFF
+    BLACK = '\033[38;2;0;0;0m'         # #000000
+
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-    GRAY = '\033[90m'
+    ENDC = '\033[0m'
+
+
+ANSI_RE = re.compile(r'\x1b\[[0-9;]*m')
+
+
+def strip_ansi(s: str) -> str:
+    return ANSI_RE.sub('', s)
+
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def print_header():
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print("""        _____                _____                    _____                    _____                    _____                                            _____                  
-         /\    \              /\    \                  /\    \                  /\    \                  /\    \                 ______                   /\    \                 
-        /::\    \            /::\    \                /::\    \                /::\____\                /::\____\               |::|   |                 /::\    \                
-       /::::\    \           \:::\    \               \:::\    \              /::::|   |               /:::/    /               |::|   |                /::::\    \               
-      /::::::\    \           \:::\    \               \:::\    \            /:::::|   |              /:::/    /                |::|   |               /::::::\    \              
-     /:::/\:::\    \           \:::\    \               \:::\    \          /::::::|   |             /:::/    /                 |::|   |              /:::/\:::\    \             
-    /:::/__\:::\    \           \:::\    \               \:::\    \        /:::/|::|   |            /:::/    /                  |::|   |             /:::/__\:::\    \            
-   /::::\   \:::\    \          /::::\    \              /::::\    \      /:::/ |::|   |           /:::/    /                   |::|   |            /::::\   \:::\    \           
-  /::::::\   \:::\    \        /::::::\    \    ____    /::::::\    \    /:::/  |::|   | _____    /:::/    /      _____         |::|   |           /::::::\   \:::\    \          
- /:::/\:::\   \:::\    \      /:::/\:::\    \  /\   \  /:::/\:::\    \  /:::/   |::|   |/\    \  /:::/____/      /\    \  ______|::|___|___ ____  /:::/\:::\   \:::\    \         
-/:::/__\:::\   \:::\____\    /:::/  \:::\____\/::\   \/:::/  \:::\____\/:: /    |::|   /::\____\|:::|    /      /::\____\|:::::::::::::::::|    |/:::/__\:::\   \:::\____\        
-\:::\   \:::\   \::/    /   /:::/    \::/    /\:::\  /:::/    \::/    /\::/    /|::|  /:::/    /|:::|____\     /:::/    /|:::::::::::::::::|____|\:::\   \:::\   \::/    /        
- \:::\   \:::\   \/____/   /:::/    / \/____/  \:::\/:::/    / \/____/  \/____/ |::| /:::/    /  \:::\    \   /:::/    /  ~~~~~~|::|~~~|~~~       \:::\   \:::\   \/____/         
-  \:::\   \:::\    \      /:::/    /            \::::::/    /                   |::|/:::/    /    \:::\    \ /:::/    /         |::|   |           \:::\   \:::\    \             
-   \:::\   \:::\____\    /:::/    /              \::::/____/                    |::::::/    /      \:::\    /:::/    /          |::|   |            \:::\   \:::\____\            
-    \:::\   \::/    /    \::/    /                \:::\    \                    |:::::/    /        \:::\__/:::/    /           |::|   |             \:::\   \::/    /            
-     \:::\   \/____/      \/____/                  \:::\    \                   |::::/    /          \::::::::/    /            |::|   |              \:::\   \/____/             
-      \:::\    \                                    \:::\    \                  /:::/    /            \::::::/    /             |::|   |               \:::\    \                 
-       \:::\____\                                    \:::\____\                /:::/    /              \::::/    /              |::|   |                \:::\____\                
-        \::/    /                                     \::/    /                \::/    /                \::/____/               |::|___|                 \::/    /                
-         \/____/                                       \/____/                  \/____/                  ~~                      ~~                       \/____/                 
-                                                                                                                                                                                  
-""")
-    print(f"{Colors.BOLD}{Colors.CYAN}" + "etinuxe j*b terminal" + f"{Colors.ENDC}")
-    
+    clear_screen()
+    width = shutil.get_terminal_size(fallback=(80, 24)).columns
+    crest_line1 = """▄▀███▄  """
+    crest_line2 = "        █▀██▄█  "
+
+    text1 = f"{Colors.GREEN}NMIPC          {Colors.ENDC}"
+    text2 = f"{Colors.MUTED}micro-ops field terminal{Colors.ENDC}"
+
+    line1 = crest_line1 + text1
+    line2 = crest_line2 + text2
+
+    def center(line: str):
+        raw_len = len(strip_ansi(line))
+        pad = max(0, (width - raw_len) // 2)
+        print(" " * pad + line)
+
+    center(line1)
+    center(line2)
+    print("")
+
+    sep = "─" * min(width - 4, 68)
+    center(f"{Colors.GRAY}{sep}{Colors.ENDC}")
+    print("")
+
+
+def micro_delay(dot_count=3, delay=0.08):
+    for _ in range(dot_count):
+        sys.stdout.write(f"{Colors.DIM}.{Colors.ENDC}")
+        sys.stdout.flush()
+        time.sleep(delay)
+    print("")
 
 
 def safe_req(method, endpoint, json=None, params=None):
@@ -59,10 +79,11 @@ def safe_req(method, endpoint, json=None, params=None):
             response = requests.get(url, headers=HEADERS, params=params)
         elif method == 'POST':
             response = requests.post(url, headers=HEADERS, json=json)
-
+        else:
+            return None
         return response
     except Exception as e:
-        print(f"{Colors.RED}[!] Connection Error: {e}{Colors.ENDC}")
+        print(f"{Colors.RED}[!] connection error: {e}{Colors.ENDC}")
         return None
 
 
@@ -70,9 +91,8 @@ def save_session(hash_val):
     try:
         with open(SESSION_FILE, 'w') as f:
             f.write(hash_val)
-    except:  # noqa: E722
-        print(f"{Colors.RED}[!] Failed to save session {Colors.ENDC}")
-        pass
+    except:
+        print(f"{Colors.RED}[!] failed to save session{Colors.ENDC}")
 
 
 def load_session():
@@ -80,44 +100,44 @@ def load_session():
         try:
             with open(SESSION_FILE, 'r') as f:
                 return f.read().strip()
-        except:  # noqa: E722 ?? litr printing
-            print(f"{Colors.RED}[!] Failed to load session {Colors.ENDC}")
-            pass
+        except:
+            print(f"{Colors.RED}[!] failed to load session{Colors.ENDC}")
     return None
 
 
 def auth_flow():
     global TOKEN, HEADERS, WORKER_HASH
+
+    print_header()
     saved_hash = load_session()
     if saved_hash:
-        print(f"{Colors.YELLOW}[*] Found saved session...{Colors.ENDC}")
+        print(f"{Colors.MUTED}[*] found saved session – verifying{Colors.ENDC}", end="")
+        micro_delay(3, 0.05)
         HEADERS = {"Authorization": f"Bearer {saved_hash}"}
         res = safe_req('GET', f'/chat/conversations/{saved_hash}')
         if res and res.status_code == 200:
             WORKER_HASH = saved_hash
             TOKEN = saved_hash
-            print(
-                f"{Colors.GREEN}[+] Auto-login successful: {WORKER_HASH}{Colors.ENDC}"
-            )
-            time.sleep(1)
+            print(f"{Colors.GREEN}[+] auto-login: {WORKER_HASH[:8]}…{Colors.ENDC}")
+            time.sleep(0.7)
             return True
         else:
-            print(f"{Colors.RED}[!] Session expired or invalid.{Colors.ENDC}")
+            print(f"{Colors.RED}[!] session expired or invalid{Colors.ENDC}")
             HEADERS = {}
 
-    print(f"\n{Colors.BOLD}AUTHENTICATION REQUIRED{Colors.ENDC}")
-    print(f"1. {Colors.CYAN}Login w/ Pass{Colors.ENDC}")
-    print(f"2. {Colors.CYAN}Signup{Colors.ENDC}")
-    print(f"3. {Colors.CYAN}Login w/ Hash{Colors.ENDC}")
+    print(f"{Colors.SOFT}{Colors.BOLD}auth required – nmipc operator node{Colors.ENDC}")
+    print(f"{Colors.DIM}select authentication mode:{Colors.ENDC}")
+    print(f"  {Colors.GREEN}1{Colors.ENDC}   login with password")
+    print(f"  {Colors.GREEN}2{Colors.ENDC}   signup")
+    print(f"  {Colors.GREEN}3{Colors.ENDC}   login with operator hash\n")
 
-    choice = input(f"\n{Colors.HEADER}SELECT > {Colors.ENDC}").strip()
+    choice = input(f"{Colors.DIM}select > {Colors.ENDC}").strip()
 
     if choice == '2':
-        print(f"\n{Colors.BOLD}--- NEW WORKER REGISTRATION ---{Colors.ENDC}")
-        username = input("Username: ")
-        email = input("Email: ")
-        password = input("Password: (min 6)")
-        
+        print(f"\n{Colors.SOFT}{Colors.BOLD}new operator registration{Colors.ENDC}")
+        username = input(f"{Colors.SOFT}username: {Colors.ENDC}")
+        email = input(f"{Colors.SOFT}email: {Colors.ENDC}")
+        password = input(f"{Colors.SOFT}password (min 6): {Colors.ENDC}")
 
         res = safe_req('POST',
                        '/auth/worker/signup',
@@ -130,26 +150,30 @@ def auth_flow():
         if res and res.status_code in [200, 201]:
             data = res.json()
             h = data.get('worker', {}).get('hash')
-            print(f"{Colors.GREEN}[+] Signup Success! Hash: {h}{Colors.ENDC}")
-            print("Please login with option 1 or 3.")
+            print(f"{Colors.GREEN}[+] signup ok – worker-hash: {h}{Colors.ENDC}")
+            print(f"{Colors.MUTED}use login option 1 or 3 next time.{Colors.ENDC}")
         else:
-            print(f"{Colors.RED}[!] Signup Failed{Colors.ENDC}")
+            print(f"{Colors.RED}[!] signup failed{Colors.ENDC}")
+        time.sleep(1.2)
         return False
 
     elif choice == '3':
-        h = input("Enter Your Hash: ").strip()
+        h = input(f"{Colors.SOFT}operator hash: {Colors.ENDC}").strip()
         if h:
             WORKER_HASH = h
             TOKEN = h
             HEADERS = {"Authorization": f"Bearer {TOKEN}"}
             save_session(h)
-            print(f"{Colors.GREEN}[+] Hash stored.{Colors.ENDC}")
+            print(f"{Colors.GREEN}[+] manual hash accepted{Colors.ENDC}")
+            time.sleep(0.7)
             return True
         return False
 
     elif choice == '1':
-        email = input("Email: ")
-        password = input("Password: ")
+        email = input(f"{Colors.SOFT}email: {Colors.ENDC}")
+        password = input(f"{Colors.SOFT}password: {Colors.ENDC}")
+        print(f"{Colors.MUTED}authenticating", end="")
+        micro_delay(3, 0.06)
         res = safe_req('POST',
                        '/auth/worker/login',
                        json={
@@ -163,46 +187,51 @@ def auth_flow():
             TOKEN = data.get('token') or WORKER_HASH
             HEADERS = {"Authorization": f"Bearer {TOKEN}"}
             save_session(WORKER_HASH)
-            print(f"{Colors.GREEN}[+] Login Successful{Colors.ENDC}")
+            print(f"{Colors.GREEN}[+] login ok – worker::{WORKER_HASH[:8]}…{Colors.ENDC}")
+            time.sleep(0.7)
             return True
         else:
-            print(f"{Colors.RED}[!] Login Failed{Colors.ENDC}")
+            print(f"{Colors.RED}[!] login failed{Colors.ENDC}")
+            time.sleep(1.0)
             return False
 
     return False
 
 
-def display(key, value, color=Colors.GREEN):
-    print(
-        f"{Colors.GRAY}{key.ljust(15)}:{Colors.ENDC} {color}{value}{Colors.ENDC}"
-    )
+def display(key, value, color=Colors.SOFT):
+    key_str = key.upper().ljust(14)
+    print(f"{Colors.DIM}{key_str}{Colors.ENDC} {color}{value}{Colors.ENDC}")
+
+
+def pause():
+    input(f"\n{Colors.DIM}[enter] return to menu{Colors.ENDC}")
 
 
 def get_missions():
-    print(f"\n{Colors.BOLD}{Colors.CYAN}--- LATEST OPERATION ---{Colors.ENDC}")
+    print(f"\n{Colors.GRAY}── {Colors.SOFT}latest operation feed{Colors.GRAY} ────────────────{Colors.ENDC}")
     res = safe_req('GET', '/mission/latest')
 
     if res and res.status_code == 200:
         data = res.json()
         m = data.get('mission') if 'mission' in data else data
         if m and isinstance(m, dict) and ('mission_id' in m or 'hash' in m):
-            print(f"{Colors.YELLOW}" + "-" * 40 + f"{Colors.ENDC}")
-            display("MISSION ID", m.get('mission_id', 'N/A'), Colors.RED)
-            display("LOCATION", m.get('location', 'N/A'))
-            display("DATE", m.get('date', 'N/A'))
-            display("TIME", m.get('time', 'N/A'))
-            display("CLIENT HASH", m.get('user_hash', 'N/A'), Colors.BLUE)
-            print(f"{Colors.YELLOW}" + "-" * 40 + f"{Colors.ENDC}")
+            print(f"{Colors.GRAY}" + "─" * 48 + f"{Colors.ENDC}")
+            display("mission id", m.get('mission_id', 'N/A'), Colors.RED)
+            display("location", m.get('location', 'N/A'), Colors.GREEN)
+            display("date", m.get('date', 'N/A'))
+            display("time", m.get('time', 'N/A'))
+            display("client hash", m.get('user_hash', 'N/A'), Colors.MUTED)
+            print(f"{Colors.GRAY}" + "─" * 48 + f"{Colors.ENDC}")
         else:
-            print(f"{Colors.GRAY}No active missions available.{Colors.ENDC}")
+            print(f"{Colors.MUTED}no active missions available.{Colors.ENDC}")
     else:
-        print(f"{Colors.RED}Failed to fetch mission feed.{Colors.ENDC}")
+        print(f"{Colors.RED}[!] failed to fetch mission feed{Colors.ENDC}")
+
+    pause()
 
 
 def get_gambling():
-    print(
-        f"\n{Colors.BOLD}{Colors.CYAN}--- HIGH STAKES CONTRACTS ---{Colors.ENDC}"
-    )
+    print(f"\n{Colors.GRAY}── {Colors.SOFT}high-stakes contracts{Colors.GRAY} ───────────────{Colors.ENDC}")
     res = safe_req('GET', '/gambling/latest')
 
     if res and res.status_code == 200:
@@ -210,54 +239,60 @@ def get_gambling():
         c = data.get('contract') if 'contract' in data else data
 
         if c and isinstance(c, dict) and ('contract_id' in c or 'hash' in c):
-            print(f"{Colors.YELLOW}" + "-" * 40 + f"{Colors.ENDC}")
-            display("CONTRACT ID", c.get('contract_id', 'N/A'), Colors.RED)
-            display("VENUE", c.get('venue', 'N/A'))
-            display("GAME", c.get('game_type', 'N/A'))
-            display("BUY-IN",
-                    f"{c.get('buy_in', '0')} {c.get('payment_type', '')}",
-                    Colors.YELLOW)
-            display("START",
-                    f"{c.get('date', 'N/A')} @ {c.get('start_time', 'N/A')}")
-            display("CLIENT", c.get('user_hash', 'N/A'), Colors.BLUE)
-            print(f"{Colors.YELLOW}" + "-" * 40 + f"{Colors.ENDC}")
+            print(f"{Colors.GRAY}" + "─" * 48 + f"{Colors.ENDC}")
+            display("contract id", c.get('contract_id', 'N/A'), Colors.RED)
+            display("venue", c.get('venue', 'N/A'), Colors.GREEN)
+            display("game", c.get('game_type', 'N/A'))
+            buy_in = f"{c.get('buy_in', '0')} {c.get('payment_type', '').replace('_', ' ')}".strip()
+            display("buy-in", buy_in)
+            start = f"{c.get('date', 'N/A')} @ {c.get('start_time', 'N/A')}"
+            display("start", start)
+            display("client", c.get('user_hash', 'N/A'), Colors.MUTED)
+            print(f"{Colors.GRAY}" + "─" * 48 + f"{Colors.ENDC}")
         else:
-            print(f"{Colors.GRAY}No active gambling contracts.{Colors.ENDC}")
+            print(f"{Colors.MUTED}no active gambling contracts.{Colors.ENDC}")
     else:
-        print(f"{Colors.RED}Failed to fetch contracts.{Colors.ENDC}")
+        print(f"{Colors.RED}[!] failed to fetch contracts{Colors.ENDC}")
+
+    pause()
 
 
 def chat_room(target_hash):
-    os.system('cls' if os.name == 'nt' else 'clear')
-    print(
-        f"{Colors.BOLD}{Colors.BLUE}SECURE UPLINK ESTABLISHED >> {target_hash}{Colors.ENDC}"
-    )
-    print(
-        f"{Colors.GRAY}Type 'exit' or 'back' to return to menu. Press Enter to refresh.{Colors.ENDC}"
-    )
-    print("-" * 50)
+    clear_screen()
+    width = shutil.get_terminal_size(fallback=(80, 24)).columns
+    title = f"{Colors.SOFT}{Colors.BOLD}uplink: {target_hash}{Colors.ENDC}"
+    subtitle = f"{Colors.MUTED}secure micro-channel established{Colors.ENDC}"
+    sep = "─" * min(width - 4, 68)
+
+    def center(line: str):
+        raw_len = len(strip_ansi(line))
+        pad = max(0, (width - raw_len) // 2)
+        print(" " * pad + line)
+
+    center(f"{Colors.GRAY}{sep}{Colors.ENDC}")
+    center(title)
+    center(subtitle)
+    center(f"{Colors.GRAY}{sep}{Colors.ENDC}")
+    print(f"{Colors.DIM}type 'exit' or 'back' to return. press enter to refresh.{Colors.ENDC}\n")
 
     last_count = 0
 
     while True:
-        #  poll msgs
         res = safe_req('GET',
                        f'/chat/messages/{WORKER_HASH}',
                        params={'with': target_hash})
         if res and res.status_code == 200:
-
             msgs = res.json().get('messages') or []
             if len(msgs) > last_count:
-                # compare and print only new
                 for m in msgs[last_count:]:
                     is_me = m.get('from_hash') == WORKER_HASH
                     sender = "YOU" if is_me else "CLIENT"
-                    color = Colors.GREEN if is_me else Colors.YELLOW
-                    print(f"{color}[{sender}]{Colors.ENDC} {m.get('content')}")
+                    color = Colors.GREEN if is_me else Colors.RED
+                    print(f"{color}[{sender}]{Colors.ENDC} {Colors.SOFT}{m.get('content')}{Colors.ENDC}")
                 last_count = len(msgs)
 
         try:
-            msg = input(f"{Colors.CYAN}MSG > {Colors.ENDC}").strip()
+            msg = input(f"{Colors.DIM}msg > {Colors.ENDC}").strip()
         except KeyboardInterrupt:
             break
 
@@ -276,29 +311,31 @@ def chat_room(target_hash):
 
 def chat_shell():
     while True:
-        print(f"\n{Colors.BOLD}{Colors.CYAN}--- COMMS UPLINK ---{Colors.ENDC}")
+        print(f"\n{Colors.GRAY}── {Colors.SOFT}comms uplink{Colors.GRAY} ───────────────────────{Colors.ENDC}")
         res = safe_req('GET', f'/chat/conversations/{WORKER_HASH}')
-        convs = res.json().get('conversations',[]) if res and res.status_code == 200 else []
+        convs = res.json().get('conversations', []) if res and res.status_code == 200 else []
 
         if not convs:
-            print(f"{Colors.GRAY}No active conversations.{Colors.ENDC}")
+            print(f"{Colors.MUTED}no active conversations.{Colors.ENDC}")
 
-        print(f"\n{Colors.RED}[0]{Colors.ENDC} Back")
-        print(f"{Colors.GREEN}[N]{Colors.ENDC} New Connection")
+        print(f"\n  {Colors.RED}[0]{Colors.ENDC}   back")
+        print(f"  {Colors.GREEN}[N]{Colors.ENDC}   new connection\n")
 
         for i, c in enumerate(convs):
-            unread = f"{Colors.RED}*{Colors.ENDC}" if c.get('unread_count',0) > 0 else " "
+            unread = f"{Colors.RED}*{Colors.ENDC}" if c.get('unread_count', 0) > 0 else " "
+            last_msg = c.get('last_message') or ""
+            if len(last_msg) > 32:
+                last_msg = last_msg[:29] + "..."
             print(
-                f"{Colors.YELLOW}[{i+1}]{Colors.ENDC} {unread} {c.get('participant_hash')} | {c.get('last_message')[:20]}..."
+                f"  {Colors.SOFT}[{i+1}]{Colors.ENDC} {unread} {Colors.DIM}{c.get('participant_hash')} | {Colors.SOFT}{last_msg}{Colors.ENDC}"
             )
 
-        choice = input(
-            f"\n{Colors.HEADER}SELECT > {Colors.ENDC}").strip().lower()
+        choice = input(f"\n{Colors.DIM}select > {Colors.ENDC}").strip().lower()
 
-        if choice == '0' or choice == 'back':
+        if choice in ['0', 'back']:
             break
         elif choice == 'n':
-            t = input("Target Hash: ").strip()
+            t = input(f"{Colors.SOFT}target hash: {Colors.ENDC}").strip()
             if t:
                 chat_room(t)
         elif choice.isdigit():
@@ -311,42 +348,52 @@ def main_shell():
     print_header()
     while not TOKEN:
         if not auth_flow():
-            if input("Retry? (y/n): ").lower() != 'y':
+            ans = input(f"{Colors.DIM}retry? (y/n): {Colors.ENDC}").lower()
+            if ans != 'y':
                 sys.exit(0)
+            print_header()
 
     while True:
-        print(
-            f"\n{Colors.BOLD}{Colors.HEADER}WORKER::{WORKER_HASH[:8]}...{Colors.ENDC}"
-        )
-        print(f"1. {Colors.CYAN}View Latest Mission{Colors.ENDC}")
-        print(f"2. {Colors.CYAN}View Gambling Contracts{Colors.ENDC}")
-        print(f"3. {Colors.CYAN}Chat Uplink{Colors.ENDC}")
-        print(f"4. {Colors.RED}Logout{Colors.ENDC}")
-        print(f"5. {Colors.RED}Exit{Colors.ENDC}")
+        print_header()
+        print(f"{Colors.MUTED}operator node: {Colors.GREEN}{WORKER_HASH[:9]}{Colors.ENDC}")
+        print(f"{Colors.GRAY}\n── operations ───────────────────────────────{Colors.ENDC}")
+        print(f"  {Colors.GREEN}1{Colors.ENDC}   mission feed")
+        print(f"  {Colors.GREEN}2{Colors.ENDC}   gambling adjustments")
+        print(f"  {Colors.GREEN}3{Colors.ENDC}   comms uplink")
 
-        cmd = input(
-            f"\n{Colors.HEADER}COMMAND > {Colors.ENDC}").strip().lower()
+        print(f"{Colors.GRAY}\n── session ──────────────────────────────────{Colors.ENDC}")
+        print(f"  {Colors.RED}4{Colors.ENDC}   logout")
+        print(f"  {Colors.RED}5{Colors.ENDC}   exit\n")
 
-        if cmd == '1' or cmd == 'missions':
+        cmd = input(f"{Colors.DIM}command > {Colors.ENDC}").strip().lower()
+
+        if cmd in ['1', 'missions', 'm']:
             get_missions()
-        elif cmd == '2' or cmd == 'gambling':
+        elif cmd in ['2', 'gambling', 'g']:
             get_gambling()
-        elif cmd == '3' or cmd == 'chat':
+        elif cmd in ['3', 'chat', 'c']:
             chat_shell()
-        elif cmd == '4' or cmd == 'logout':
+        elif cmd in ['4', 'logout']:
             if os.path.exists(SESSION_FILE):
                 os.remove(SESSION_FILE)
-            print("Logged out.")
+            print(f"{Colors.MUTED}logged out. session cleared.{Colors.ENDC}")
+            time.sleep(0.6)
+            clear_screen()
+            time.sleep(0.4)
             sys.exit(0)
-        elif cmd == '5' or cmd == 'exit':
+        elif cmd in ['5', 'exit', 'q']:
+            print(f"{Colors.MUTED}terminating session.{Colors.ENDC}")
+            time.sleep(0.4)
             sys.exit(0)
-        elif cmd == 'clear':
-            os.system('cls' if os.name == 'nt' else 'clear')
+        elif cmd in ['clear', 'cls']:
             print_header()
+        else:
+            print(f"{Colors.DIM}unrecognized command.{Colors.ENDC}")
+            time.sleep(0.4)
 
 
 if __name__ == "__main__":
     try:
         main_shell()
     except KeyboardInterrupt:
-        print("\nTerminated.")
+        print(f"\n{Colors.MUTED}session terminate by operator.{Colors.ENDC}")
