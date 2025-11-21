@@ -4,12 +4,15 @@ import os
 import time
 import shutil
 import re
+import hashlib
+from cryptography.fernet import Fernet
+import base64
 
 BASE_URL = "https://exunhack.onrender.com"
 TOKEN = None
 WORKER_HASH = None
 HEADERS = {}
-SESSION_FILE = "worker_session.txt"  # owo dont blame me
+SESSION_FILE = ".worker_session.enc"  
 
 
 class Colors:
@@ -87,21 +90,48 @@ def safe_req(method, endpoint, json=None, params=None):
         return None
 
 
+def get_machine_key():
+    """Generate a key based on machine-specific identifiers"""
+    try:
+        machine_id = f"{os.getlogin()}-{os.name}-{sys.platform}"
+    except:
+        machine_id = f"{os.name}-{sys.platform}-fallback"
+    
+
+    key_material = hashlib.sha256(machine_id.encode()).digest()
+    return base64.urlsafe_b64encode(key_material)
+
+
 def save_session(hash_val):
     try:
-        with open(SESSION_FILE, 'w') as f:
-            f.write(hash_val)
-    except:
-        print(f"{Colors.RED}[!] failed to save session{Colors.ENDC}")
+        key = get_machine_key()
+        cipher = Fernet(key)
+        encrypted = cipher.encrypt(hash_val.encode())
+        
+        with open(SESSION_FILE, 'wb') as f:
+            f.write(encrypted)
+    except Exception as e:
+        print(f"{Colors.RED}[!] failed to save session: {e}{Colors.ENDC}")
 
 
 def load_session():
     if os.path.exists(SESSION_FILE):
         try:
-            with open(SESSION_FILE, 'r') as f:
-                return f.read().strip()
-        except:
-            print(f"{Colors.RED}[!] failed to load session{Colors.ENDC}")
+            key = get_machine_key()
+            cipher = Fernet(key)
+            
+            with open(SESSION_FILE, 'rb') as f:
+                encrypted = f.read()
+            
+            decrypted = cipher.decrypt(encrypted)
+            return decrypted.decode().strip()
+        except Exception as e:
+            print(f"{Colors.RED}[!] failed to load session (may be corrupted){Colors.ENDC}")
+            # Remove corrupted session file
+            try:
+                os.remove(SESSION_FILE)
+            except:
+                pass
     return None
 
 
