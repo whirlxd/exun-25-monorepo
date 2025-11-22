@@ -7,7 +7,7 @@ The core story around which we developed can be viewed in [STORYLINE.md](STORYLI
 - CLI for etinuxE
 - Screensaver [WIP]
 - Core API - https://exunhack.onrender.com
-
+ 
 #### Tech used -
  - Python & Pygame
 - go w/ gin
