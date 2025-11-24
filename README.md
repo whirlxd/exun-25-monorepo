@@ -15,6 +15,5 @@ The pitch deck can be viewed [here](https://www.behance.net/gallery/239120727/NM
 - go w/ gin
 - react & tailwind (typescript ofc)
 
-<br>
-<b><p style="text-align:center;">Paradigm <3 Exun</p></b>
+
 
